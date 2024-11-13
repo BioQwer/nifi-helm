@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "nifi.fullname" . }}
+  name: {{.Release.Name}}
   labels:
-    {{- include "nifi.labels" . | nindent 4 }}
+    app: {{.Release.Name}}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "nifi.selectorLabels" . | nindent 6 }}
+      app: {{.Release.Name}}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -27,14 +27,13 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "nifi.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{.Values.global.imageRegistry}}{{.Values.image.repository}}:{{.Values.image.tag}}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

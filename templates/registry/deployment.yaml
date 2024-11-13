@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nifi-registry.fullname" . }}
+  name: {{.Release.Name}}-registry
   labels:
-    {{- include "nifi-registry.labels" . | nindent 4 }}
+    app: {{.Release.Name }}-registry
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "nifi-registry.selectorLabels" . | nindent 6 }}
+      app: {{.Release.Name }}-registry
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "nifi-registry.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,14 +26,13 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "nifi.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.imageRegistry.repository }}:{{ .Values.imageRegistry.tag | default .Chart.AppVersion }}"
+          image: {{.Values.global.imageRegistry}}{{.Values.imageRegistry.repository}}:{{.Values.imageRegistry.tag}}
           imagePullPolicy: {{ .Values.imageRegistry.pullPolicy }}
           ports:
             - name: http

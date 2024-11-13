@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "nifi-registry.fullname" . }}
+  name: {{.Release.Name}}-registry
   labels:
-    {{- include "nifi-registry.labels" . | nindent 4 }}
+    app: {{.Release.Name}}-registry
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -35,7 +35,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "nifi-registry.fullname" $ }}
+                name: {{.Release.Name}}-registry
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}
