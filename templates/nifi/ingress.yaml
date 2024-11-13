@@ -33,9 +33,9 @@ spec:
             {{- end }}
             backend:
               service:
-                name: http
+                name: {{ include "nifi.fullname" $ }}
                 port:
-                  number: {{ .Values.nifi.portHttp }}
+                  number: {{ $.Values.nifi.portHttp }}
           {{- end }}
     {{- end }}
 {{- end }}
