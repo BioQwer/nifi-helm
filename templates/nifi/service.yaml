@@ -1,15 +1,13 @@
-{{ if .Values.registry.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{.Release.Name }}-registry
+  name: {{.Release.Name }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.nifi.portHttp }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
-    app: {{.Release.Name }}-registry
-{{- end}}
+    app: {{.Release.Name }}
