@@ -38,14 +38,24 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.nifi.portHttp }}
-              protocol: TCP
+              containerPort: 8080
+              protocol: UDP
             - name: https
-              containerPort: {{ .Values.nifi.portHttps }}
-              protocol: TCP
+              containerPort: 8443
+              protocol: UDP
             - name: management
               containerPort: 52020
-              protocol: TCP
+              protocol: UDP
+            - name: remote-input
+              containerPort: 10443
+              protocol: UDP
+            - name: node-port
+              containerPort: 11443
+              protocol: UDP
+            - name: node-lb-port
+              containerPort: 6342
+              protocol: UDP
+
 {{/*          livenessProbe:*/}}
 {{/*            {{- toYaml .Values.livenessProbe | nindent 12 }}*/}}
 {{/*          readinessProbe:*/}}
