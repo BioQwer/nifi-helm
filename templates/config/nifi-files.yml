@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{.Release.Name}}-files
 data:
-  {{- tpl ((.Files.Glob "config-template/**").AsConfig | nindent 2) . }}
+  {{- tpl ((.Files.Glob "config-template/nifi/**").AsConfig | nindent 2) . }}

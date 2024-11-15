@@ -9,21 +9,29 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       app: {{.Release.Name}}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+
       annotations:
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
+        security.alpha.kubernetes.io/sysctls: net.ipv4.ip_local_port_range=10000 65000
+
       labels:
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: {{ .Release.Name | quote }}
+        heritage: {{ .Release.Service | quote }}
         app: {{.Release.Name }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{.Release.Name}}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -39,22 +47,22 @@ spec:
           ports:
             - name: http
               containerPort: 8080
-              protocol: UDP
             - name: https
               containerPort: 8443
-              protocol: UDP
             - name: management
               containerPort: 52020
-              protocol: UDP
+            - name: cluster-port
+              containerPort: 6007
             - name: remote-input
               containerPort: 10443
-              protocol: UDP
             - name: node-port
               containerPort: 11443
-              protocol: UDP
             - name: node-lb-port
               containerPort: 6342
-              protocol: UDP
+{{/*          command:*/}}
+{{/*            - sleep*/}}
+{{/*          args:*/}}
+{{/*            - '10000000'*/}}
 
 {{/*          livenessProbe:*/}}
 {{/*            {{- toYaml .Values.livenessProbe | nindent 12 }}*/}}
